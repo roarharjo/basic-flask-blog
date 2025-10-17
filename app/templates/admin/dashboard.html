@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - My Blog{% endblock %}
+{% block content %}
+  <h2>Admin Dashboard</h2>
+  
+  <div class="admin-stats">
+    <div class="stat-card">
+      <h3>Users</h3>
+      <p>{{ users|length }} total users</p>
+      <a class="button" href="{{ url_for('admin.users') }}">Manage Users</a>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Posts</h3>
+      <p>{{ posts|length }} recent posts</p>
+      <a class="button" href="{{ url_for('admin.posts') }}">Manage Posts</a>
+    </div>
+  </div>
+
+  <h3>Recent Posts</h3>
+  {% if posts %}
+    <ul class="post-list">
+      {% for post in posts %}
+        <li class="post-item">
+          <h4><a href="{{ url_for('blog.post_detail', post_id=post.id) }}">{{ post.title }}</a></h4>
+          <small>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}{% if post.author %} • by {{ post.author.username }}{% endif %}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No posts yet.</p>
+  {% endif %}
+{% endblock %}

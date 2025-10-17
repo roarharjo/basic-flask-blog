@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    image: trailing-blog-app:latest
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
+      - DATABASE_URL=sqlite:////data/blog.db
+    volumes:
+      - app-data:/data
+      - ./:/app:rw
+    expose:
+      - "8000"
+    restart: unless-stopped
+
+  nginx:
+    build: ./nginx
+    image: trailing-blog-nginx:latest
+    ports:
+      - "8080:80"
+    depends_on:
+      - app
+    volumes:
+      - ./:/app:ro
+    restart: unless-stopped
+
+volumes:
+  app-data:
+
+

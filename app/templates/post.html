@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} - My Blog{% endblock %}
+{% block content %}
+  <article class="post">
+    <h2>{{ post.title }}</h2>
+    <small>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}{% if post.author %} • by {{ post.author.username }}{% endif %}</small>
+    <div class="post-body">
+      <p>{{ post.body | replace('\n', '<br>') | safe }}</p>
+    </div>
+  </article>
+  <p><a href="{{ url_for('blog.index') }}">Back to home</a></p>
+{% endblock %}
+
+

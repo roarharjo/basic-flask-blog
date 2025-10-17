@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}My Blog - Home{% endblock %}
+{% block content %}
+  <h2>Recent Posts</h2>
+  {% if posts %}
+    <ul class="post-list">
+      {% for post in posts %}
+        <li class="post-item">
+          <h3><a href="{{ url_for('blog.post_detail', post_id=post.id) }}">{{ post.title }}</a></h3>
+          <small>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}{% if post.author %} • by {{ post.author.username }}{% endif %}</small>
+          <p>{{ post.body[:200] }}{% if post.body|length > 200 %}...{% endif %}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No posts yet. <a href="{{ url_for('blog.new_post') }}">Create one</a>.</p>
+  {% endif %}
+{% endblock %}
+
+
