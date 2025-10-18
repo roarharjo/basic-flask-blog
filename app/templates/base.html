@@ -4,40 +4,44 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}My Blog{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}" />
   </head>
-  <body>
-    <header class="site-header">
-      <div class="container">
-        <h1 class="site-title"><a href="{{ url_for('blog.index') }}">My Blog</a></h1>
-        <nav>
-          {% if current_user.is_authenticated %}
-            <span>Hi, {{ current_user.username }}</span>
-            <a class="button" href="{{ url_for('blog.new_post') }}">New Post</a>
-            <a class="button" href="{{ url_for('admin.dashboard') }}">Admin</a>
-            <a class="button" href="{{ url_for('auth.logout') }}">Logout</a>
-          {% else %}
-            <a class="button" href="{{ url_for('auth.login') }}">Login</a>
-            <a class="button" href="{{ url_for('auth.register') }}">Register</a>
-          {% endif %}
-        </nav>
+  <body class="bg-dark-bg text-dark-fg min-h-screen">
+    <header class="bg-dark-card border-b border-dark-border">
+      <div class="max-w-4xl mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <h1 class="text-2xl font-bold">
+            <a href="{{ url_for('blog.index') }}" class="text-dark-fg hover:text-dark-accent transition-colors">My Blog</a>
+          </h1>
+          <nav class="flex items-center space-x-4">
+            {% if current_user.is_authenticated %}
+              <span class="text-dark-muted">Hi, {{ current_user.username }}</span>
+              <a class="btn-primary" href="{{ url_for('blog.new_post') }}">New Post</a>
+              <a class="btn-secondary" href="{{ url_for('admin.dashboard') }}">Admin</a>
+              <a class="btn-secondary" href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+              <a class="btn-primary" href="{{ url_for('auth.login') }}">Login</a>
+              <a class="btn-secondary" href="{{ url_for('auth.register') }}">Register</a>
+            {% endif %}
+          </nav>
+        </div>
       </div>
     </header>
-    <main class="container">
+    <main class="max-w-4xl mx-auto px-4 py-8">
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-          <ul class="flashes">
+          <div class="mb-6">
             {% for category, message in messages %}
-              <li class="flash {{ category }}">{{ message }}</li>
+              <div class="flash-{{ category }} mb-2">{{ message }}</div>
             {% endfor %}
-          </ul>
+          </div>
         {% endif %}
       {% endwith %}
       {% block content %}{% endblock %}
     </main>
-    <footer class="site-footer">
-      <div class="container">
-        <p>&copy; {{ 2025 }} My Blog</p>
+    <footer class="bg-dark-card border-t border-dark-border mt-auto">
+      <div class="max-w-4xl mx-auto px-4 py-4">
+        <p class="text-dark-muted text-center">&copy; {{ 2025 }} My Blog</p>
       </div>
     </footer>
   </body>

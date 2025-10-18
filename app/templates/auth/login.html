@@ -1,19 +1,23 @@
 {% extends 'base.html' %}
 {% block title %}Login - My Blog{% endblock %}
 {% block content %}
-  <h2>Login</h2>
-  <form method="post" class="form">
-    <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" required />
-    </div>
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" required />
-    </div>
-    <button type="submit" class="button">Login</button>
-  </form>
-  <p>Need an account? <a href="{{ url_for('auth.register') }}">Register</a>.</p>
+  <div class="max-w-md mx-auto">
+    <h2 class="text-3xl font-bold mb-6 text-center">Login</h2>
+    <form method="post" class="card">
+      <div class="mb-4">
+        <label for="username" class="block text-sm font-medium text-dark-fg mb-2">Username</label>
+        <input type="text" id="username" name="username" class="form-input" required />
+      </div>
+      <div class="mb-6">
+        <label for="password" class="block text-sm font-medium text-dark-fg mb-2">Password</label>
+        <input type="password" id="password" name="password" class="form-input" required />
+      </div>
+      <button type="submit" class="btn-primary w-full">Login</button>
+    </form>
+    <p class="text-center mt-4 text-dark-muted">
+      Need an account? <a href="{{ url_for('auth.register') }}" class="text-dark-accent hover:underline">Register</a>.
+    </p>
+  </div>
 {% endblock %}
 
 

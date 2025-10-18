@@ -7,14 +7,24 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # System deps
-RUN apt-get update -y && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get install -y --no-install-recommends build-essential curl && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
+
+# Install Python dependencies
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
 # App source
 COPY . .
+
+# Install Node dependencies and build Tailwind CSS
+RUN npm install
+RUN mkdir -p app/static/dist
+RUN npm run build-css-prod
+RUN ls -la app/static/dist/
 
 # Environment defaults
 ENV FLASK_ENV=production \

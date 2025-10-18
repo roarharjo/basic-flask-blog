@@ -1,19 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}My Blog - Home{% endblock %}
 {% block content %}
-  <h2>Recent Posts</h2>
+  <h2 class="text-3xl font-bold mb-6">Recent Posts</h2>
   {% if posts %}
-    <ul class="post-list">
+    <div class="space-y-6">
       {% for post in posts %}
-        <li class="post-item">
-          <h3><a href="{{ url_for('blog.post_detail', post_id=post.id) }}">{{ post.title }}</a></h3>
-          <small>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}{% if post.author %} • by {{ post.author.username }}{% endif %}</small>
-          <p>{{ post.body[:200] }}{% if post.body|length > 200 %}...{% endif %}</p>
-        </li>
+        <article class="card">
+          <h3 class="text-xl font-semibold mb-2">
+            <a href="{{ url_for('blog.post_detail', post_id=post.id) }}" class="text-dark-fg hover:text-dark-accent transition-colors">{{ post.title }}</a>
+          </h3>
+          <div class="text-sm text-dark-muted mb-3">
+            {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}{% if post.author %} • by {{ post.author.username }}{% endif %}
+          </div>
+          <p class="text-dark-fg">{{ post.body[:200] }}{% if post.body|length > 200 %}...{% endif %}</p>
+        </article>
       {% endfor %}
-    </ul>
+    </div>
   {% else %}
-    <p>No posts yet. <a href="{{ url_for('blog.new_post') }}">Create one</a>.</p>
+    <div class="text-center py-12">
+      <p class="text-dark-muted text-lg mb-4">No posts yet.</p>
+      <a href="{{ url_for('blog.new_post') }}" class="btn-primary">Create one</a>
+    </div>
   {% endif %}
 {% endblock %}
 
