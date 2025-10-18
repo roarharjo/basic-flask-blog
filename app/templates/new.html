@@ -2,17 +2,139 @@
 {% block title %}New Post - My Blog{% endblock %}
 {% block content %}
   <h2 class="text-3xl font-bold mb-6">New Post</h2>
-  <form method="post" class="card max-w-2xl">
+  
+  <style>
+    #title::placeholder {
+      color: #4aa3ff !important;
+      opacity: 0.5 !important;
+    }
+  </style>
+  
+  <form id="new-post-form" method="POST" class="card max-w-4xl">
     <div class="mb-4">
-      <label for="title" class="block text-sm font-medium text-dark-fg mb-2">Title</label>
-      <input type="text" id="title" name="title" class="form-input" required />
+      <input 
+        type="text" 
+        id="title" 
+        name="title" 
+        class="form-input w-full text-lg" 
+        required
+        placeholder="What's on your mind?"
+      />
     </div>
+    
     <div class="mb-6">
-      <label for="body" class="block text-sm font-medium text-dark-fg mb-2">Body</label>
-      <textarea id="body" name="body" rows="10" class="form-input" required></textarea>
+      <textarea 
+        id="body" 
+        name="body" 
+        required
+        rows="15"
+        placeholder="Start writing..."
+        class="form-input font-mono text-sm"
+      ></textarea>
     </div>
-    <button type="submit" class="btn-primary">Create Post</button>
+    
+    <div class="flex gap-4">
+      <button type="button" id="submit-btn" onclick="submitForm(event)" class="btn-primary">Publish</button>
+      <a href="{{ url_for('blog.index') }}" class="btn-secondary">Cancel</a>
+    </div>
   </form>
+
+  <script>
+    let easyMDE;
+    
+    // Global submit function
+    function submitForm(event) {
+      event.preventDefault();
+      
+      const title = document.getElementById('title').value.trim();
+      const body = easyMDE ? easyMDE.value().trim() : document.getElementById('body').value.trim();
+      
+      if (!title) {
+        alert('Please enter a title');
+        return false;
+      }
+      
+      if (!body) {
+        alert('Please enter some content');
+        return false;
+      }
+      
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Publishing...';
+      
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('body', body);
+      
+      fetch('{{ url_for("blog.new_post") }}', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (response.ok || response.status === 302) {
+          window.location.href = '{{ url_for("blog.index") }}';
+        } else {
+          throw new Error('Submission failed');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publish';
+      });
+      
+      return false;
+    }
+    
+    // Initialize EasyMDE editor with minimal UI
+    window.addEventListener('load', function() {
+      try {
+        easyMDE = new EasyMDE({
+          element: document.getElementById('body'),
+          spellChecker: false,
+          autoDownloadFontAwesome: false,
+          maxHeight: '600px',
+          toolbar: false,  // Hide toolbar completely
+          status: false,    // Hide status bar
+          sideBySideFullscreen: false,
+          lineWrapping: true,
+        });
+        
+        // Minimal dark theme styling
+        const style = document.createElement('style');
+        style.textContent = `
+          .CodeMirror {
+            background-color: #0b1220 !important;
+            color: #e6edf3 !important;
+            border: none !important;
+            font-family: 'Courier New', monospace !important;
+            font-size: 0.95rem !important;
+          }
+          .CodeMirror-gutters {
+            background-color: #0b1220 !important;
+            border-right: none !important;
+          }
+          .CodeMirror-linenumber {
+            color: #22304a !important;
+          }
+          .CodeMirror-cursor {
+            border-left-color: #4aa3ff !important;
+            border-left-width: 2px !important;
+          }
+        `;
+        document.head.appendChild(style);
+      } catch (error) {
+        console.error('EasyMDE init error:', error);
+      }
+    });
+  </script>
+
+  <!-- EasyMDE CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+  <!-- EasyMDE JS -->
+  <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
 {% endblock %}
 
 

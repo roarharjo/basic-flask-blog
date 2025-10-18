@@ -2,17 +2,188 @@
 {% block title %}{{ post.title }} - My Blog{% endblock %}
 {% block content %}
   <article class="card">
-    <h2 class="text-3xl font-bold mb-4">{{ post.title }}</h2>
-    <div class="text-sm text-dark-muted mb-6">
-      {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}{% if post.author %} • by {{ post.author.username }}{% endif %}
+    <h2 class="text-4xl font-bold mb-2 text-dark-accent">{{ post.title }}</h2>
+    <div class="text-sm text-dark-muted mb-6 pb-6 border-b border-dark-border">
+      <time datetime="{{ post.created_at.isoformat() }}">
+        {{ post.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+      </time>
+      {% if post.author %}
+        <span class="mx-2">•</span>
+        <span>by <strong>{{ post.author.username }}</strong></span>
+      {% endif %}
     </div>
-    <div class="prose prose-invert max-w-none">
-      <p class="whitespace-pre-wrap">{{ post.body }}</p>
+    
+    <!-- Rendered markdown content with styling -->
+    <div class="prose prose-invert max-w-none prose-content">
+      {{ post.body_html | safe }}
     </div>
   </article>
-  <div class="mt-6">
-    <a href="{{ url_for('blog.index') }}" class="btn-secondary">← Back to home</a>
+  
+  <div class="mt-8 flex gap-4">
+    <a href="{{ url_for('blog.index') }}" class="btn-secondary">← Back to Posts</a>
   </div>
+
+  <!-- Markdown content styling -->
+  <style>
+    .prose-content h1, 
+    .prose-content h2, 
+    .prose-content h3, 
+    .prose-content h4, 
+    .prose-content h5, 
+    .prose-content h6 {
+      color: #4aa3ff !important;
+      font-weight: bold !important;
+      margin-bottom: 1rem !important;
+      margin-top: 1.5rem !important;
+      scroll-margin-top: 80px;
+      display: block !important;
+    }
+    
+    .prose-content h1 { font-size: 1.875rem !important; }
+    .prose-content h2 { font-size: 1.5rem !important; }
+    .prose-content h3 { font-size: 1.25rem !important; }
+    .prose-content h4 { font-size: 1.125rem !important; }
+    .prose-content h5 { font-size: 1rem !important; }
+    .prose-content h6 { font-size: 0.875rem !important; }
+    
+    .prose-content p {
+      margin-bottom: 1rem !important;
+      line-height: 1.75 !important;
+      color: #e6edf3 !important;
+      display: block !important;
+    }
+    
+    .prose-content a {
+      color: #4aa3ff !important;
+      text-decoration: underline !important;
+      transition: all 0.2s;
+    }
+    
+    .prose-content a:hover {
+      text-decoration: none !important;
+    }
+    
+    .prose-content strong {
+      font-weight: bold !important;
+      color: #e6edf3 !important;
+      display: inline !important;
+    }
+    
+    .prose-content em {
+      font-style: italic !important;
+      color: #9fb1c9 !important;
+      display: inline !important;
+    }
+    
+    .prose-content code {
+      background-color: #0b1220 !important;
+      color: #4aa3ff !important;
+      padding: 0.25rem 0.5rem !important;
+      border-radius: 0.25rem !important;
+      font-family: 'Courier New', monospace !important;
+      font-size: 0.875rem !important;
+      display: inline-block !important;
+    }
+    
+    .prose-content pre {
+      background-color: #0b1220 !important;
+      border: 1px solid #22304a !important;
+      border-radius: 0.5rem !important;
+      padding: 1rem !important;
+      overflow-x: auto !important;
+      margin-bottom: 1rem !important;
+      display: block !important;
+    }
+    
+    .prose-content pre code {
+      background-color: transparent !important;
+      color: #9fb1c9 !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+    }
+    
+    .prose-content blockquote {
+      border-left: 4px solid #4aa3ff !important;
+      background-color: #121a2b !important;
+      padding-left: 1rem !important;
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+      padding-right: 1rem !important;
+      margin: 1rem 0 !important;
+      font-style: italic !important;
+      color: #9fb1c9 !important;
+      display: block !important;
+    }
+    
+    .prose-content ul, 
+    .prose-content ol {
+      margin-bottom: 1rem !important;
+      margin-left: 1.5rem !important;
+      display: block !important;
+    }
+    
+    .prose-content li {
+      margin-bottom: 0.5rem !important;
+      color: #e6edf3 !important;
+      display: list-item !important;
+    }
+    
+    .prose-content ul li {
+      list-style-type: disc !important;
+    }
+    
+    .prose-content ol li {
+      list-style-type: decimal !important;
+    }
+    
+    .prose-content hr {
+      margin: 1.5rem 0 !important;
+      border: 0 !important;
+      border-top: 1px solid #22304a !important;
+      display: block !important;
+    }
+    
+    .prose-content table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      margin-bottom: 1rem !important;
+      display: table !important;
+    }
+    
+    .prose-content table th {
+      background-color: #121a2b !important;
+      border: 1px solid #22304a !important;
+      padding: 0.5rem 1rem !important;
+      color: #4aa3ff !important;
+      font-weight: bold !important;
+      text-align: left !important;
+      display: table-cell !important;
+    }
+    
+    .prose-content table td {
+      border: 1px solid #22304a !important;
+      padding: 0.5rem 1rem !important;
+      color: #e6edf3 !important;
+      display: table-cell !important;
+    }
+    
+    .prose-content table tbody tr:nth-child(even) {
+      background-color: #0b1220 !important;
+    }
+    
+    .prose-content table tbody tr:hover {
+      background-color: #121a2b !important;
+      transition: background-color 0.2s;
+    }
+    
+    .prose-content img {
+      max-width: 100% !important;
+      height: auto !important;
+      border-radius: 0.5rem !important;
+      margin: 1rem 0 !important;
+      display: block !important;
+    }
+  </style>
 {% endblock %}
 
 

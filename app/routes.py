@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from . import db
 from .models import Post
+from .markdown_utils import markdown_to_html
 
 
 bp = Blueprint('blog', __name__)
@@ -28,7 +29,11 @@ def new_post():
         if not title or not body:
             flash('Title and body are required.', 'error')
             return redirect(url_for('blog.new_post'))
-        post = Post(title=title, body=body, author=current_user)
+        
+        # Process markdown to HTML
+        body_html = markdown_to_html(body)
+        
+        post = Post(title=title, body=body, body_html=body_html, author=current_user)
         db.session.add(post)
         db.session.commit()
         flash('Post created!', 'success')
