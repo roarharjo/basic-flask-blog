@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from . import db
-from .models import Post
+from .models import Post, Attachment
 from .markdown_utils import markdown_to_html
+from .upload_utils import save_upload
 
 
 bp = Blueprint('blog', __name__)
@@ -35,6 +36,19 @@ def new_post():
         
         post = Post(title=title, body=body, body_html=body_html, author=current_user)
         db.session.add(post)
+        db.session.flush()  # Flush to get post ID before handling uploads
+        
+        # Handle file uploads
+        if 'images' in request.files:
+            files = request.files.getlist('images')
+            for file in files:
+                if file and file.filename != '':
+                    result = save_upload(file, post.id)
+                    if result:
+                        filename, file_path = result
+                        attachment = Attachment(filename=filename, file_path=file_path, post=post)
+                        db.session.add(attachment)
+        
         db.session.commit()
         flash('Post created!', 'success')
         return redirect(url_for('blog.index'))

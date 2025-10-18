@@ -17,6 +17,19 @@
     <div class="prose prose-invert max-w-none prose-content">
       {{ post.body_html | safe }}
     </div>
+
+    <!-- Images gallery -->
+    {% if post.attachments %}
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for attachment in post.attachments %}
+          <img 
+            src="/static/{{ attachment.file_path }}" 
+            alt="{{ attachment.filename }}"
+            class="w-full rounded border border-dark-border object-cover max-h-80"
+          />
+        {% endfor %}
+      </div>
+    {% endif %}
   </article>
   
   <div class="mt-8 flex gap-4">
