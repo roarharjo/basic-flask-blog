@@ -10,7 +10,7 @@
     }
   </style>
   
-  <form id="new-post-form" method="POST" class="card max-w-4xl">
+  <form id="new-post-form" method="POST" class="card max-w-4xl" enctype="multipart/form-data">
     <div class="mb-4">
       <input 
         type="text" 
@@ -32,6 +32,19 @@
         class="form-input font-mono text-sm"
       ></textarea>
     </div>
+
+    <div class="mb-6">
+      <label class="block text-sm text-dark-muted mb-2">Images (optional)</label>
+      <input 
+        type="file" 
+        id="images" 
+        name="images" 
+        multiple
+        accept="image/*"
+        class="w-full"
+      />
+      <div id="preview-container" class="mt-4 flex flex-wrap gap-4"></div>
+    </div>
     
     <div class="flex gap-4">
       <button type="button" id="submit-btn" onclick="submitForm(event)" class="btn-primary">Publish</button>
@@ -41,6 +54,23 @@
 
   <script>
     let easyMDE;
+    
+    // Image preview
+    document.getElementById('images').addEventListener('change', function(e) {
+      const preview = document.getElementById('preview-container');
+      preview.innerHTML = '';
+      
+      for (let file of this.files) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = document.createElement('img');
+          img.src = event.target.result;
+          img.className = 'h-24 w-24 object-cover rounded border border-dark-border';
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
     
     // Global submit function
     function submitForm(event) {
@@ -63,9 +93,9 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Publishing...';
       
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('body', body);
+      const formData = new FormData(document.getElementById('new-post-form'));
+      formData.set('title', title);
+      formData.set('body', body);
       
       fetch('{{ url_for("blog.new_post") }}', {
         method: 'POST',
