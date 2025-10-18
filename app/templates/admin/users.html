@@ -1,77 +1,163 @@
 {% extends 'base.html' %}
 {% block title %}Manage Users - My Blog{% endblock %}
 {% block content %}
-  <div class="mb-6">
+  <div class="mb-8">
     <h2 class="text-3xl font-bold mb-2">Manage Users</h2>
     <p class="text-dark-muted">Control user permissions and roles</p>
   </div>
   
-  <div class="card overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead class="bg-dark-border">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">User</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Role</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Joined</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Posts</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-dark-border">
-          {% for user in users %}
-            <tr class="hover:bg-dark-card transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-8 w-8">
-                    <div class="h-8 w-8 rounded-full bg-dark-accent flex items-center justify-center">
-                      <span class="text-sm font-medium text-white">{{ user.username[0].upper() }}</span>
-                    </div>
-                  </div>
-                  <div class="ml-3">
-                    <div class="text-sm font-medium text-dark-fg">{{ user.username }}</div>
-                    {% if user.id == current_user.id %}
-                      <div class="text-xs text-dark-muted">(You)</div>
-                    {% endif %}
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+  <div class="card">
+    <style>
+      .users-table {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1.2fr 0.6fr 1.2fr;
+        gap: 0;
+      }
+      .table-header, .table-row {
+        display: contents;
+      }
+      .table-cell {
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        min-height: 60px;
+      }
+      .table-header .table-cell {
+        background: #121a2b;
+        border-bottom: 2px solid #4aa3ff;
+        font-weight: bold;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #4aa3ff;
+        min-height: auto;
+      }
+      .table-row {
+        border-bottom: 1px solid #22304a;
+      }
+      .table-row:hover {
+        background: rgba(42, 62, 106, 0.3);
+      }
+      .table-cell-left { justify-content: flex-start; }
+      .table-cell-center { justify-content: center; }
+      .table-cell-right { justify-content: flex-end; }
+      
+      /* Avatar styles */
+      .avatar {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        border-radius: 50%;
+        background-color: rgba(74, 163, 255, 0.2);
+        border: 1px solid rgba(74, 163, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .avatar span {
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: #4aa3ff;
+      }
+      
+      .user-cell {
+        gap: 1rem !important;
+      }
+      
+      .current-badge {
+        display: inline-block;
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 0.15rem 0.5rem;
+        background-color: rgba(74, 163, 255, 0.15);
+        border: 1px solid rgba(74, 163, 255, 0.3);
+        border-radius: 0.25rem;
+        color: #4aa3ff;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+      }
+    </style>
+    
+    <div class="users-table">
+      <!-- Headers -->
+      <div class="table-header">
+        <div class="table-cell table-cell-left">User</div>
+        <div class="table-cell table-cell-left">Role</div>
+        <div class="table-cell table-cell-left">Joined</div>
+        <div class="table-cell table-cell-center">Posts</div>
+        <div class="table-cell table-cell-right">Actions</div>
+      </div>
+      
+      <!-- Rows -->
+      {% for user in users %}
+        <div class="table-row">
+          <!-- User -->
+          <div class="table-cell table-cell-left">
+            <div class="flex items-center gap-5 w-full min-w-0 user-cell">
+              <div class="avatar">
+                <span>{{ user.username[0].upper() }}</span>
+              </div>
+              <div class="flex flex-col min-w-0">
+                <span class="font-medium text-dark-fg text-sm truncate">{{ user.username }}</span>
+                {% if user.id == current_user.id %}
+                  <span class="text-xs text-dark-muted current-badge">Current</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Role -->
+          <div class="table-cell table-cell-left">
+            {% if user.is_admin %}
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-dark-accent/15 text-dark-accent border border-dark-accent/30">
+                Admin
+              </span>
+            {% else %}
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-dark-muted border border-dark-border">
+                User
+              </span>
+            {% endif %}
+          </div>
+          
+          <!-- Joined -->
+          <div class="table-cell table-cell-left">
+            <span class="text-sm text-dark-muted">{{ user.created_at.strftime('%b %d, %Y') }}</span>
+          </div>
+          
+          <!-- Posts -->
+          <div class="table-cell table-cell-center">
+            <span class="inline-flex items-center justify-center h-8 w-8 rounded bg-dark-accent/10 text-dark-accent text-sm font-bold">
+              {{ user.posts|length }}
+            </span>
+          </div>
+          
+          <!-- Actions -->
+          <div class="table-cell table-cell-right">
+            {% if user.id != current_user.id %}
+              <form method="post" action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" class="inline">
                 {% if user.is_admin %}
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                    Admin
-                  </span>
+                  <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded transition-all duration-200 bg-red-900/20 text-red-300 hover:bg-red-900/40 border border-red-700/40 hover:border-red-700/60">
+                    Remove Admin
+                  </button>
                 {% else %}
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    User
-                  </span>
+                  <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded transition-all duration-200 bg-dark-accent/20 text-dark-accent hover:bg-dark-accent/40 border border-dark-accent/40 hover:border-dark-accent/60">
+                    Make Admin
+                  </button>
                 {% endif %}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-dark-muted">
-                {{ user.created_at.strftime('%Y-%m-%d') }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-dark-fg">
-                {{ user.posts|length }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm">
-                {% if user.id != current_user.id %}
-                  <form method="post" action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" class="inline">
-                    <button type="submit" class="{% if user.is_admin %}btn-danger{% else %}btn-secondary{% endif %} text-sm">
-                      {% if user.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
-                    </button>
-                  </form>
-                {% else %}
-                  <span class="text-dark-muted text-sm">Current user</span>
-                {% endif %}
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+              </form>
+            {% else %}
+              <span class="text-xs font-medium text-dark-muted">Current user</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
     </div>
   </div>
   
-  <div class="mt-6">
-    <a href="{{ url_for('admin.dashboard') }}" class="btn-secondary">← Back to Dashboard</a>
+  <div class="mt-8">
+    <a href="{{ url_for('admin.dashboard') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded font-medium transition-colors duration-200 bg-dark-card text-dark-muted hover:bg-dark-border hover:text-dark-fg border border-dark-border">
+      ← Back to Dashboard
+    </a>
   </div>
 {% endblock %}
