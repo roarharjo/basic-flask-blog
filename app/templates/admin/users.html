@@ -1,48 +1,77 @@
 {% extends 'base.html' %}
 {% block title %}Manage Users - My Blog{% endblock %}
 {% block content %}
-  <h2>Manage Users</h2>
-  
-  <div class="admin-table">
-    <table>
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>Admin</th>
-          <th>Created</th>
-          <th>Posts</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for user in users %}
-          <tr>
-            <td>{{ user.username }}</td>
-            <td>
-              {% if user.is_admin %}
-                <span class="badge admin">Admin</span>
-              {% else %}
-                <span class="badge user">User</span>
-              {% endif %}
-            </td>
-            <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
-            <td>{{ user.posts|length }}</td>
-            <td>
-              {% if user.id != current_user.id %}
-                <form method="post" action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" style="display: inline;">
-                  <button type="submit" class="button small">
-                    {% if user.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
-                  </button>
-                </form>
-              {% else %}
-                <span class="muted">You</span>
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="mb-6">
+    <h2 class="text-3xl font-bold mb-2">Manage Users</h2>
+    <p class="text-dark-muted">Control user permissions and roles</p>
   </div>
   
-  <p><a href="{{ url_for('admin.dashboard') }}">← Back to Dashboard</a></p>
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-dark-border">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">User</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Role</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Joined</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Posts</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-dark-border">
+          {% for user in users %}
+            <tr class="hover:bg-dark-card transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-8 w-8">
+                    <div class="h-8 w-8 rounded-full bg-dark-accent flex items-center justify-center">
+                      <span class="text-sm font-medium text-white">{{ user.username[0].upper() }}</span>
+                    </div>
+                  </div>
+                  <div class="ml-3">
+                    <div class="text-sm font-medium text-dark-fg">{{ user.username }}</div>
+                    {% if user.id == current_user.id %}
+                      <div class="text-xs text-dark-muted">(You)</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {% if user.is_admin %}
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    Admin
+                  </span>
+                {% else %}
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    User
+                  </span>
+                {% endif %}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-dark-muted">
+                {{ user.created_at.strftime('%Y-%m-%d') }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-dark-fg">
+                {{ user.posts|length }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                {% if user.id != current_user.id %}
+                  <form method="post" action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" class="inline">
+                    <button type="submit" class="{% if user.is_admin %}btn-danger{% else %}btn-secondary{% endif %} text-sm">
+                      {% if user.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
+                    </button>
+                  </form>
+                {% else %}
+                  <span class="text-dark-muted text-sm">Current user</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="mt-6">
+    <a href="{{ url_for('admin.dashboard') }}" class="btn-secondary">← Back to Dashboard</a>
+  </div>
 {% endblock %}

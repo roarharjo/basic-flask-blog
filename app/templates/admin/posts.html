@@ -1,42 +1,68 @@
 {% extends 'base.html' %}
 {% block title %}Manage Posts - My Blog{% endblock %}
 {% block content %}
-  <h2>Manage Posts</h2>
-  
-  <div class="admin-table">
-    <table>
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Author</th>
-          <th>Created</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for post in posts %}
-          <tr>
-            <td>
-              <a href="{{ url_for('blog.post_detail', post_id=post.id) }}">{{ post.title }}</a>
-            </td>
-            <td>
-              {% if post.author %}
-                {{ post.author.username }}
-              {% else %}
-                <span class="muted">Unknown</span>
-              {% endif %}
-            </td>
-            <td>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-            <td>
-              <form method="post" action="{{ url_for('admin.delete_post', post_id=post.id) }}" style="display: inline;" onsubmit="return confirm('Delete this post?')">
-                <button type="submit" class="button small danger">Delete</button>
-              </form>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="mb-6">
+    <h2 class="text-3xl font-bold mb-2">Manage Posts</h2>
+    <p class="text-dark-muted">Review and manage all blog posts</p>
   </div>
   
-  <p><a href="{{ url_for('admin.dashboard') }}">← Back to Dashboard</a></p>
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-dark-border">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Post</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Author</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Created</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-dark-border">
+          {% for post in posts %}
+            <tr class="hover:bg-dark-card transition-colors">
+              <td class="px-6 py-4">
+                <div class="max-w-xs">
+                  <a href="{{ url_for('blog.post_detail', post_id=post.id) }}" class="text-sm font-medium text-dark-fg hover:text-dark-accent transition-colors block truncate">
+                    {{ post.title }}
+                  </a>
+                  <p class="text-xs text-dark-muted mt-1 line-clamp-2">{{ post.body[:100] }}{% if post.body|length > 100 %}...{% endif %}</p>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {% if post.author %}
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0 h-6 w-6">
+                      <div class="h-6 w-6 rounded-full bg-dark-accent flex items-center justify-center">
+                        <span class="text-xs font-medium text-white">{{ post.author.username[0].upper() }}</span>
+                      </div>
+                    </div>
+                    <div class="ml-2">
+                      <div class="text-sm text-dark-fg">{{ post.author.username }}</div>
+                    </div>
+                  </div>
+                {% else %}
+                  <span class="text-sm text-dark-muted">Unknown</span>
+                {% endif %}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-dark-muted">
+                {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <div class="flex space-x-2">
+                  <a href="{{ url_for('blog.post_detail', post_id=post.id) }}" class="btn-secondary text-sm">View</a>
+                  <form method="post" action="{{ url_for('admin.delete_post', post_id=post.id) }}" class="inline" onsubmit="return confirm('Delete this post? This action cannot be undone.')">
+                    <button type="submit" class="btn-danger text-sm">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="mt-6">
+    <a href="{{ url_for('admin.dashboard') }}" class="btn-secondary">← Back to Dashboard</a>
+  </div>
 {% endblock %}
