@@ -42,14 +42,19 @@ docker compose up --build
 
 3. **Access the application:**
 - **Blog**: http://localhost:8080
-- **Admin Panel**: http://localhost:8080/admin (login required)
+- **Admin Panel**: http://localhost:8080/admin
+
+### Default Admin Credentials
+- **Username**: `admin`
+- **Password**: `admin123`
+- ⚠️ **Important**: Change the admin password after first login!
 
 ### First Steps
 
-1. **Register an account** at http://localhost:8080/auth/register
-2. **Login** at http://localhost:8080/auth/login
+1. **Login with admin credentials** to access the admin panel
+2. **Register additional user accounts** at http://localhost:8080/auth/register
 3. **Create your first post** at http://localhost:8080/new
-4. **Access admin panel** at http://localhost:8080/admin
+4. **Manage users and posts** through the admin panel
 
 ## 📁 Project Structure
 
@@ -104,6 +109,8 @@ trailing/
 ### Environment Variables
 - `SECRET_KEY`: Flask secret key (default: `dev-secret-key`)
 - `DATABASE_URL`: Database connection string (default: `sqlite:////data/blog.db`)
+- `ADMIN_USERNAME`: Default admin username (default: `admin`)
+- `ADMIN_PASSWORD`: Default admin password (default: `admin123`)
 
 ### Database
 - **SQLite**: Default database for development

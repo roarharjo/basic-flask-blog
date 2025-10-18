@@ -17,7 +17,9 @@
             {% if current_user.is_authenticated %}
               <span class="text-dark-muted">Hi, {{ current_user.username }}</span>
               <a class="btn-primary" href="{{ url_for('blog.new_post') }}">New Post</a>
-              <a class="btn-secondary" href="{{ url_for('admin.dashboard') }}">Admin</a>
+              {% if current_user.is_admin %}
+                <a class="btn-secondary" href="{{ url_for('admin.dashboard') }}">Admin</a>
+              {% endif %}
               <a class="btn-secondary" href="{{ url_for('auth.logout') }}">Logout</a>
             {% else %}
               <a class="btn-primary" href="{{ url_for('auth.login') }}">Login</a>

@@ -14,10 +14,9 @@ def admin_required(f):
         if not current_user.is_authenticated:
             flash('Login required', 'error')
             return redirect(url_for('auth.login'))
-        # Temporarily allow all logged-in users to access admin
-        # if not current_user.is_admin:
-        #     flash('Admin access required', 'error')
-        #     return redirect(url_for('blog.index'))
+        if not current_user.is_admin:
+            flash('Admin access required', 'error')
+            return redirect(url_for('blog.index'))
         return f(*args, **kwargs)
     return decorated_function
 

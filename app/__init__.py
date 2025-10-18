@@ -44,7 +44,39 @@ def create_app() -> Flask:
     with app.app_context():
         from . import models  # noqa: F401 - ensure models are registered
         db.create_all()
+        
+        # Create admin user if it doesn't exist
+        create_admin_user()
 
     return app
+
+
+def create_admin_user():
+    """Create an admin user if none exists"""
+    from .models import User
+    from werkzeug.security import generate_password_hash
+    
+    # Check if any admin users exist
+    admin_exists = User.query.filter_by(is_admin=True).first()
+    
+    if not admin_exists:
+        # Create default admin user
+        admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
+        admin_password = os.environ.get('ADMIN_PASSWORD', 'admin123')
+        
+        admin_user = User(
+            username=admin_username,
+            password_hash=generate_password_hash(admin_password),
+            is_admin=True
+        )
+        
+        db.session.add(admin_user)
+        db.session.commit()
+        
+        print(f"✅ Admin user created: {admin_username}")
+        print(f"🔑 Default password: {admin_password}")
+        print("⚠️  Please change the admin password after first login!")
+    else:
+        print("ℹ️  Admin user already exists")
 
 
