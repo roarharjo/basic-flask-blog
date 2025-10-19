@@ -53,6 +53,21 @@ def toggle_admin(user_id):
     return redirect(url_for('admin.users'))
 
 
+@bp.route('/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.id == current_user.id:
+        flash('Cannot delete your own account', 'error')
+        return redirect(url_for('admin.users'))
+    username = user.username
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'User "{username}" deleted', 'success')
+    return redirect(url_for('admin.users'))
+
+
 @bp.route('/posts')
 @login_required
 @admin_required

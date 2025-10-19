@@ -77,6 +77,66 @@
         margin-left: 0.5rem;
         vertical-align: middle;
       }
+      
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .users-table {
+          grid-template-columns: 1fr;
+        }
+        .table-row {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 0;
+          border-bottom: 2px solid #22304a;
+          margin-bottom: 1.5rem;
+          padding-bottom: 0;
+        }
+        .table-cell {
+          padding: 0.75rem 1.5rem;
+          min-height: auto;
+          border-bottom: none;
+          display: block;
+        }
+        .table-cell:first-child {
+          padding-top: 1rem;
+        }
+        .table-cell:last-child {
+          padding-bottom: 1rem;
+        }
+        .table-header {
+          display: none;
+        }
+        .table-cell::before {
+          content: attr(data-label);
+          font-weight: bold;
+          color: #4aa3ff;
+          font-size: 0.65rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          display: block;
+          margin-bottom: 0.6rem;
+          opacity: 0.9;
+        }
+        .user-cell {
+          gap: 0.5rem !important;
+        }
+        .user-cell .avatar {
+          width: 28px;
+          height: 28px;
+          min-width: 28px;
+        }
+        .table-cell-right > div {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        .table-cell-right form {
+          width: 100%;
+        }
+        .table-cell-right button {
+          width: 100%;
+        }
+      }
     </style>
     
     <div class="users-table">
@@ -93,7 +153,7 @@
       {% for user in users %}
         <div class="table-row">
           <!-- User -->
-          <div class="table-cell table-cell-left">
+          <div class="table-cell table-cell-left" data-label="User">
             <div class="flex items-center gap-5 w-full min-w-0 user-cell">
               <div class="avatar">
                 <span>{{ user.username[0].upper() }}</span>
@@ -108,7 +168,7 @@
           </div>
           
           <!-- Role -->
-          <div class="table-cell table-cell-left">
+          <div class="table-cell table-cell-left" data-label="Role">
             {% if user.is_admin %}
               <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-dark-accent/15 text-dark-accent border border-dark-accent/30">
                 Admin
@@ -121,31 +181,38 @@
           </div>
           
           <!-- Joined -->
-          <div class="table-cell table-cell-left">
+          <div class="table-cell table-cell-left" data-label="Joined">
             <span class="text-sm text-dark-muted">{{ user.created_at.strftime('%b %d, %Y') }}</span>
           </div>
           
           <!-- Posts -->
-          <div class="table-cell table-cell-center">
+          <div class="table-cell table-cell-center" data-label="Posts">
             <span class="inline-flex items-center justify-center h-8 w-8 rounded bg-dark-accent/10 text-dark-accent text-sm font-bold">
               {{ user.posts|length }}
             </span>
           </div>
           
           <!-- Actions -->
-          <div class="table-cell table-cell-right">
+          <div class="table-cell table-cell-right" data-label="Actions">
             {% if user.id != current_user.id %}
-              <form method="post" action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" class="inline">
-                {% if user.is_admin %}
+              <div class="flex gap-2">
+                <form method="post" action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" class="inline">
+                  {% if user.is_admin %}
+                    <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded transition-all duration-200 bg-red-900/20 text-red-300 hover:bg-red-900/40 border border-red-700/40 hover:border-red-700/60">
+                      Remove Admin
+                    </button>
+                  {% else %}
+                    <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded transition-all duration-200 bg-dark-accent/20 text-dark-accent hover:bg-dark-accent/40 border border-dark-accent/40 hover:border-dark-accent/60">
+                      Make Admin
+                    </button>
+                  {% endif %}
+                </form>
+                <form method="post" action="{{ url_for('admin.delete_user', user_id=user.id) }}" class="inline" onsubmit="return confirm('Delete this user? This action cannot be undone.')">
                   <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded transition-all duration-200 bg-red-900/20 text-red-300 hover:bg-red-900/40 border border-red-700/40 hover:border-red-700/60">
-                    Remove Admin
+                    Delete
                   </button>
-                {% else %}
-                  <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded transition-all duration-200 bg-dark-accent/20 text-dark-accent hover:bg-dark-accent/40 border border-dark-accent/40 hover:border-dark-accent/60">
-                    Make Admin
-                  </button>
-                {% endif %}
-              </form>
+                </form>
+              </div>
             {% else %}
               <span class="text-xs font-medium text-dark-muted">Current user</span>
             {% endif %}

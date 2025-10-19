@@ -6,59 +6,198 @@
     <p class="text-dark-muted">Review and manage all blog posts</p>
   </div>
   
-  <div class="card overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead class="bg-dark-border">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Post</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Author</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Created</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-dark-fg uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-dark-border">
-          {% for post in posts %}
-            <tr class="hover:bg-dark-card transition-colors">
-              <td class="px-6 py-4">
-                <div class="max-w-xs">
-                  <a href="{{ url_for('blog.post_detail', post_id=post.id) }}" class="text-sm font-medium text-dark-fg hover:text-dark-accent transition-colors block truncate">
-                    {{ post.title }}
-                  </a>
-                  <p class="text-xs text-dark-muted mt-1 line-clamp-2">{{ post.body[:100] }}{% if post.body|length > 100 %}...{% endif %}</p>
+  <div class="card">
+    <style>
+      .posts-table {
+        display: grid;
+        grid-template-columns: 3fr 1.5fr 1.5fr 1.2fr;
+        gap: 0;
+      }
+      .table-header, .table-row {
+        display: contents;
+      }
+      .table-cell {
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        align-items: center;
+        min-height: 70px;
+      }
+      .table-header .table-cell {
+        background: #121a2b;
+        border-bottom: 2px solid #4aa3ff;
+        font-weight: bold;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #4aa3ff;
+        min-height: auto;
+        padding: 1rem 1.5rem;
+      }
+      .table-row {
+        border-bottom: 1px solid #22304a;
+      }
+      .table-row:hover {
+        background: rgba(42, 62, 106, 0.3);
+      }
+      .table-cell-left { justify-content: flex-start; }
+      .table-cell-center { justify-content: center; }
+      .table-cell-right { justify-content: flex-end; }
+      
+      /* Avatar styles */
+      .avatar {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        border-radius: 50%;
+        background-color: rgba(74, 163, 255, 0.2);
+        border: 1px solid rgba(74, 163, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .avatar span {
+        font-size: 0.7rem;
+        font-weight: bold;
+        color: #4aa3ff;
+      }
+      
+      .post-title-cell {
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .author-cell {
+        gap: 1rem !important;
+      }
+      
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .posts-table {
+          grid-template-columns: 1fr;
+        }
+        .table-row {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 0;
+          border-bottom: 2px solid #22304a;
+          margin-bottom: 1.5rem;
+          padding-bottom: 0;
+        }
+        .table-cell {
+          padding: 0.75rem 1.5rem;
+          min-height: auto;
+          border-bottom: none;
+          display: block;
+        }
+        .table-cell:first-child {
+          padding-top: 1rem;
+        }
+        .table-cell:last-child {
+          padding-bottom: 1rem;
+        }
+        .table-header {
+          display: none;
+        }
+        .table-cell::before {
+          content: attr(data-label);
+          font-weight: bold;
+          color: #4aa3ff;
+          font-size: 0.65rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          display: block;
+          margin-bottom: 0.6rem;
+          opacity: 0.9;
+        }
+        .post-title-cell {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .post-title-cell a {
+          font-size: 1rem;
+          margin-top: 0.25rem;
+        }
+        .author-cell {
+          gap: 0.5rem !important;
+        }
+        .author-cell .avatar {
+          width: 28px;
+          height: 28px;
+          min-width: 28px;
+        }
+        .table-cell-right {
+          display: block !important;
+        }
+        .table-cell-right > div {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        .table-cell-right a,
+        .table-cell-right button {
+          width: 100%;
+          text-align: center;
+        }
+      }
+    </style>
+    
+    <div class="posts-table">
+      <!-- Headers -->
+      <div class="table-header">
+        <div class="table-cell table-cell-left">Post</div>
+        <div class="table-cell table-cell-left">Author</div>
+        <div class="table-cell table-cell-left">Created</div>
+        <div class="table-cell table-cell-right">Actions</div>
+      </div>
+      
+      <!-- Rows -->
+      {% for post in posts %}
+        <div class="table-row">
+          <!-- Post -->
+          <div class="table-cell table-cell-left post-title-cell" data-label="Post">
+            <a href="{{ url_for('blog.post_detail', post_id=post.id) }}" class="font-medium text-dark-accent hover:text-dark-fg transition-colors truncate">
+              {{ post.title }}
+            </a>
+            <p class="text-xs text-dark-muted line-clamp-2">{{ post.body[:80] }}{% if post.body|length > 80 %}...{% endif %}</p>
+          </div>
+          
+          <!-- Author -->
+          <div class="table-cell table-cell-left author-cell" data-label="Author">
+            {% if post.author %}
+              <div class="flex items-center gap-2 w-full min-w-0">
+                <div class="avatar">
+                  <span>{{ post.author.username[0].upper() }}</span>
                 </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {% if post.author %}
-                  <div class="flex items-center">
-                    <div class="flex-shrink-0 h-6 w-6">
-                      <div class="h-6 w-6 rounded-full bg-dark-accent flex items-center justify-center">
-                        <span class="text-xs font-medium text-white">{{ post.author.username[0].upper() }}</span>
-                      </div>
-                    </div>
-                    <div class="ml-2">
-                      <div class="text-sm text-dark-fg">{{ post.author.username }}</div>
-                    </div>
-                  </div>
-                {% else %}
-                  <span class="text-sm text-dark-muted">Unknown</span>
-                {% endif %}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-dark-muted">
-                {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <div class="flex space-x-2">
-                  <a href="{{ url_for('blog.post_detail', post_id=post.id) }}" class="btn-secondary text-sm">View</a>
-                  <form method="post" action="{{ url_for('admin.delete_post', post_id=post.id) }}" class="inline" onsubmit="return confirm('Delete this post? This action cannot be undone.')">
-                    <button type="submit" class="btn-danger text-sm">Delete</button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+                <span class="text-sm text-dark-fg truncate">{{ post.author.username }}</span>
+              </div>
+            {% else %}
+              <span class="text-sm text-dark-muted">Unknown</span>
+            {% endif %}
+          </div>
+          
+          <!-- Created -->
+          <div class="table-cell table-cell-left" data-label="Created">
+            <span class="text-sm text-dark-muted">{{ post.created_at.strftime('%b %d, %Y') }}</span>
+          </div>
+          
+          <!-- Actions -->
+          <div class="table-cell table-cell-right" data-label="Actions">
+            <div class="flex gap-4">
+              <a href="{{ url_for('blog.post_detail', post_id=post.id) }}" class="px-3 py-1.5 text-xs font-semibold rounded transition-all duration-200 bg-dark-accent/20 text-dark-accent hover:bg-dark-accent/40 border border-dark-accent/40 hover:border-dark-accent/60">
+                View
+              </a>
+              <form method="post" action="{{ url_for('admin.delete_post', post_id=post.id) }}" class="inline" onsubmit="return confirm('Delete this post? This action cannot be undone.')">
+                <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded transition-all duration-200 bg-red-900/20 text-red-300 hover:bg-red-900/40 border border-red-700/40 hover:border-red-700/60">
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     </div>
   </div>
   
