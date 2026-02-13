@@ -6,7 +6,8 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+# Don't ignore our Tailwind CSS dist folder
+# dist/
 downloads/
 eggs/
 .eggs/
